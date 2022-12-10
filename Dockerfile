@@ -1,10 +1,23 @@
-# matlab
+ARG MATLAB_DOCKER_TAG=latest
+FROM mathworks/matlab:${MATLAB_DOCKER_TAG}
 
-A custom matlab docker image for my own use.
+USER root
+WORKDIR /root
 
-This image has been built on top of the [matlab](https://hub.docker.com/r/mathworks/matlab/) image from MathWorks.
-## List of installed toolboxes:
-```bash
+RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && \
+    apt-get install --no-install-recommends --yes wget && \
+    apt-get clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt/matlab
+    # Run mpm to install MATLAB in the target location and delete the mpm installation afterwards.
+    # If mpm fails to install successfully then output the logfile to the terminal, otherwise cleanup.
+RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm && chmod +x mpm && \
+    MATLAB_RELEASE=`ls | grep R*` && \
+    ./mpm install \
+    --release=${MATLAB_RELEASE} \
+    --destination=/opt/matlab/${MATLAB_RELEASE}/ \
+    --doc \
+    --products \
     5G_Toolbox \
     #AUTOSAR_Blockset \
     #Aerospace_Blockset \
@@ -119,38 +132,16 @@ This image has been built on top of the [matlab](https://hub.docker.com/r/mathwo
     WLAN_Toolbox \
     Wavelet_Toolbox \
     #Wireless_HDL_Toolbox \
-    Wireless_Testbench
-```
+    Wireless_Testbench || \
+    (echo "MPM Installation Failure. See below for more information:" && cat /tmp/mathworks_root.log && false) && \
+    rm -f mpm /tmp/mathworks_root.log && \
+    rm /usr/local/bin/matlab && \
+    ln -s /opt/matlab/bin/matlab /usr/local/bin/matlab
 
-## Build
+WORKDIR /
+# Seems to be needed for -browser version to install addons
+RUN mkdir /.Add-Ons && \
+    chown -R matlab /.Add-Ons
 
-```bash
-docker build -t matlab .
-```
-
-## Run MATLAB in desktop mode and interact with it via VNC
-
-To start the MATLAB desktop, execute:
-
-```bash
-docker run -it --rm -p 5901:5901 -p 6080:6080 --shm-size=512M matifali/matlab:latest -vnc
-```
-
-To connect to the MATLAB desktop, either:
-
-1. Point a browser to port 6080 of the docker host machine running this container e.g [http://localhost:6080](http://localhost:6080) for the local machine.
-2. Use a VNC client to connect to display 1 of the docker host machine (hostname:1)
-The VNC password is matlab by default. Use the `PASSWORD` environment variable to change it.
-
-## Run MATLAB and interact with it via a web browser
-
-To start the container, execute:
-
-```bash
-docker run -it --rm -p 8888:8888 --shm-size=512M matifali/matlab:latest -browser
-```
-
-Running the above command prints text to your terminal containing the URL to access MATLAB. For example:
-
-MATLAB can be accessed at:
-[http://localhost:8888/index.html](http://localhost:8888/index.html)
+USER matlab
+WORKDIR /home/matlab/data
