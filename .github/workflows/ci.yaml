@@ -2,8 +2,8 @@
 name: Docker
 on:
   schedule:
-    # run twice a year
-    - cron: "0 0 1 1 *"
+    # run every month
+    - cron: "0 0 1 * *"
   push:
     branches: [main]
     paths-ignore: ["**.md"]
