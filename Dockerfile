@@ -9,8 +9,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && \
     apt-get clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/matlab
-    # Run mpm to install MATLAB in the target location and delete the mpm installation afterwards.
-    # If mpm fails to install successfully then output the logfile to the terminal, otherwise cleanup.
+# Run mpm to install MATLAB in the target location and delete the mpm installation afterwards.
+# If mpm fails to install successfully then output the logfile to the terminal, otherwise cleanup.
 RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm && chmod +x mpm && \
     MATLAB_RELEASE=`ls | grep R*` && \
     ./mpm install \
@@ -137,6 +137,14 @@ RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm && chmod +x mpm && \
     rm -f mpm /tmp/mathworks_root.log && \
     rm /usr/local/bin/matlab && \
     ln -s /opt/matlab/bin/matlab /usr/local/bin/matlab
+
+WORKDIR /tmp
+# Install cvx toolbox by downloading it to /tmp and then deleting it after installation
+RUN wget -q http://web.cvxr.com/cvx/cvx-a64.tar.gz -O cvx-a64.tar.gz && \
+    tar -xzf cvx-a64.tar.gz && \
+    rm cvx-a64.tar.gz && \
+    chown -R matlab /tmp/cvx && \
+    echo "oldFolder = cd('/tmp/cvx'); cvx_setup; cd(oldFolder);" >> /home/matlab/Documents/MATLAB/startup.m
 
 WORKDIR /
 # Seems to be needed for -browser version to install addons
