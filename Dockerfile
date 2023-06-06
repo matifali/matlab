@@ -1,23 +1,37 @@
-ARG MATLAB_DOCKER_TAG=latest
-FROM mathworks/matlab:${MATLAB_DOCKER_TAG}
+# Copyright 2019 - 2023 The MathWorks, Inc.
 
-USER root
-WORKDIR /root
+# To specify which MATLAB release to install in the container, edit the value of the MATLAB_RELEASE argument.
+# Use lower case to specify the release, for example: ARG MATLAB_RELEASE=r2021b
+ARG MATLAB_RELEASE=r2023a
 
-RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && \
-    apt-get install --no-install-recommends --yes wget && \
-    apt-get clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
+# When you start the build stage, this Dockerfile by default uses the Ubuntu-based matlab-deps image.
+# To check the available matlab-deps images, see: https://hub.docker.com/r/mathworks/matlab-deps
+FROM mathworks/matlab-deps:${MATLAB_RELEASE}
 
-WORKDIR /opt/matlab
+# Declare the global argument to use at the current build stage
+ARG MATLAB_RELEASE
+
+# Install mpm dependencies
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get update \
+    && apt-get install --no-install-recommends --yes \
+    wget \
+    unzip \
+    ca-certificates \
+    && apt-get clean \
+    && apt-get autoremove \
+    && rm -rf /var/lib/apt/lists/*
+
 # Run mpm to install MATLAB in the target location and delete the mpm installation afterwards.
 # If mpm fails to install successfully then output the logfile to the terminal, otherwise cleanup.
-RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm && chmod +x mpm && \
-    MATLAB_RELEASE=`ls | grep R*` && \
-    ./mpm install \
+RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm \ 
+    && chmod +x mpm \
+    && ./mpm install \
     --release=${MATLAB_RELEASE} \
     --destination=/opt/matlab/${MATLAB_RELEASE}/ \
     --doc \
     --products \
+    MATLAB \
     5G_Toolbox \
     #AUTOSAR_Blockset \
     #Aerospace_Blockset \
@@ -135,21 +149,27 @@ RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm && chmod +x mpm && \
     Wireless_Testbench || \
     (echo "MPM Installation Failure. See below for more information:" && cat /tmp/mathworks_root.log && false) && \
     rm -f mpm /tmp/mathworks_root.log && \
-    rm /usr/local/bin/matlab && \
-    ln -s /opt/matlab/bin/matlab /usr/local/bin/matlab
+    ln -s /opt/matlab/${MATLAB_RELEASE}/bin/matlab /usr/local/bin/matlab
 
-WORKDIR /tmp
-# Install cvx toolbox by downloading it to /tmp and then deleting it after installation
-RUN wget -q http://web.cvxr.com/cvx/cvx-a64.tar.gz -O cvx-a64.tar.gz && \
-    tar -xzf cvx-a64.tar.gz && \
-    rm cvx-a64.tar.gz && \
-    chown -R matlab /tmp/cvx && \
-    echo "oldFolder = cd('/tmp/cvx'); cvx_setup; cd(oldFolder);" >> /home/matlab/Documents/MATLAB/startup.m
+# Add "matlab" user and grant sudo permission.
+RUN adduser --shell /bin/bash --disabled-password --gecos "" matlab \
+    && echo "matlab ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/matlab \
+    && chmod 0440 /etc/sudoers.d/matlab
 
-WORKDIR /
-# Seems to be needed for -browser version to install addons
-RUN mkdir /.Add-Ons && \
-    chown -R matlab /.Add-Ons
+ARG LICENSE_SERVER
+ENV MLM_LICENSE_FILE=$LICENSE_SERVER
+ENV MW_DDUX_FORCE_ENABLE=true MW_CONTEXT_TAGS=MATLAB:DOCKERFILE:V1
 
+# Set user and work directory
 USER matlab
-WORKDIR /home/matlab/data
+WORKDIR /home/matlab
+
+# Install cvx toolbox by downloading it to /tmp and then deleting it after installation
+RUN wget -q http://web.cvxr.com/cvx/cvx-a64.tar.gz -O /tmp/cvx-a64.tar.gz && \
+    tar -xzf /tmp/cvx-a64.tar.gz -C /tmp && \
+    rm /tmp/cvx-a64.tar.gz && \
+    mkdir -p /home/matlab/Documents/MATLAB && \
+    echo "run /tmp/cvx/cvx_startup.m" >> /home/matlab/Documents/MATLAB/startup.m
+
+ENTRYPOINT ["matlab"]
+CMD [""]
