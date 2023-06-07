@@ -6,19 +6,19 @@ ARG MATLAB_RELEASE=r2023a
 
 # When you start the build stage, this Dockerfile by default uses the Ubuntu-based matlab-deps image.
 # To check the available matlab-deps images, see: https://hub.docker.com/r/mathworks/matlab-deps
-FROM mathworks/matlab-deps:${MATLAB_RELEASE}
+FROM mathworks/matlab:${MATLAB_RELEASE}
 
 # Declare the global argument to use at the current build stage
 ARG MATLAB_RELEASE
+
+USER root
+WORKDIR /
 
 # Install mpm dependencies
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get install --no-install-recommends --yes \
     curl \
-    wget \
-    unzip \
-    ca-certificates \
     && apt-get clean \
     && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/*
@@ -150,20 +150,8 @@ RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm \
     Wireless_Testbench || \
     (echo "MPM Installation Failure. See below for more information:" && cat /tmp/mathworks_root.log && false) && \
     rm -f mpm /tmp/mathworks_root.log && \
+    rm -f /usr/local/bin/matlab && \
     ln -s /opt/matlab/${MATLAB_RELEASE}/bin/matlab /usr/local/bin/matlab
-
-# Add "matlab" user and grant sudo permission.
-RUN adduser --shell /bin/bash --disabled-password --gecos "" matlab \
-    && echo "matlab ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/matlab \
-    && chmod 0440 /etc/sudoers.d/matlab
-
-ARG LICENSE_SERVER
-ENV MLM_LICENSE_FILE=$LICENSE_SERVER
-ENV MW_DDUX_FORCE_ENABLE=true MW_CONTEXT_TAGS=MATLAB:DOCKERFILE:V1
-
-# Set user and work directory
-USER matlab
-WORKDIR /home/matlab
 
 # Install cvx toolbox by downloading it to /tmp and then deleting it after installation
 RUN wget -q http://web.cvxr.com/cvx/cvx-a64.tar.gz -O /tmp/cvx-a64.tar.gz && \
@@ -172,5 +160,8 @@ RUN wget -q http://web.cvxr.com/cvx/cvx-a64.tar.gz -O /tmp/cvx-a64.tar.gz && \
     mkdir -p /home/matlab/Documents/MATLAB && \
     echo "run /tmp/cvx/cvx_startup.m" >> /home/matlab/Documents/MATLAB/startup.m
 
+# Set user and work directory
+USER matlab
+WORKDIR /home/matlab
 ENTRYPOINT ["matlab"]
 CMD [""]
