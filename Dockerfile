@@ -15,6 +15,7 @@ ARG MATLAB_RELEASE
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get install --no-install-recommends --yes \
+    curl \
     wget \
     unzip \
     ca-certificates \
