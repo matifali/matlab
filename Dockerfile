@@ -152,13 +152,6 @@ RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm \
     rm -f /usr/local/bin/matlab && \
     ln -s /opt/matlab/${MATLAB_RELEASE}/bin/matlab /usr/local/bin/matlab
 
-# Install cvx toolbox by downloading it to /tmp and then deleting it after installation
-RUN wget -q http://web.cvxr.com/cvx/cvx-a64.tar.gz -O /tmp/cvx-a64.tar.gz && \
-    tar -xzf /tmp/cvx-a64.tar.gz -C /tmp && \
-    rm /tmp/cvx-a64.tar.gz && \
-    mkdir -p /home/matlab/Documents/MATLAB && \
-    echo "run /tmp/cvx/cvx_startup.m" >> /home/matlab/Documents/MATLAB/startup.m
-
 # Set user and work directory
 USER matlab
 WORKDIR /home/matlab
