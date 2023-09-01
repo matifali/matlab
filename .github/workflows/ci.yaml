@@ -68,15 +68,15 @@ jobs:
           cache-to: type=gha,mode=max
       
       - name: Setup Depot
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
         uses: depot/setup-action@v1
       
       - name: Build and Push with Depot.dev
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
         uses: depot/build-push-action@v1
         with:
           project: z5gr2wjp1s
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
