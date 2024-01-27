@@ -6,7 +6,7 @@ ARG MATLAB_RELEASE=r2023b
 
 # When you start the build stage, this Dockerfile by default uses the Ubuntu-based matlab-deps image.
 # To check the available matlab-deps images, see: https://hub.docker.com/r/mathworks/matlab-deps
-FROM mathworks/matlab:${MATLAB_RELEASE}
+FROM mathworks/matlab-deps:${MATLAB_RELEASE}
 ARG MATLAB_RELEASE
 
 # Install mpm dependencies
