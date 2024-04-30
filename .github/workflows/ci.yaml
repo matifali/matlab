@@ -33,6 +33,7 @@ jobs:
             matifali/matlab
           tags: |
             type=raw,value=latest
+            type=raw,value=r2023b
           labels: |
             org.opencontainers.image.source=${{ github.event.repository.clone_url }}
             org.opencontainers.image.revision=${{ github.sha }}
