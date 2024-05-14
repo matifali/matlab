@@ -155,5 +155,7 @@ RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm \
     && sudo rm -f mpm /tmp/mathworks_root.log \
     && sudo ln -s /opt/matlab/${MATLAB_RELEASE}/bin/matlab /usr/local/bin/matlab
 
+RUN ls -l /usr/local/bin/matlab
+
 ENTRYPOINT ["matlab"]
 CMD [""]
