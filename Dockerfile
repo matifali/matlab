@@ -1,7 +1,7 @@
-# Copyright 2019 - 2023 The MathWorks, Inc.
+# Copyright 2019 - 2024 The MathWorks, Inc.
 
 # To specify which MATLAB release to install in the container, edit the value of the MATLAB_RELEASE argument.
-# Use lower case to specify the release, for example: ARG MATLAB_RELEASE=r2021b
+# Use lower case to specify the release, for example: ARG MATLAB_RELEASE=r2023a
 ARG MATLAB_RELEASE=r2024a
 
 # When you start the build stage, this Dockerfile by default uses the Ubuntu-based matlab-deps image.
@@ -153,7 +153,7 @@ RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm \
     #Wireless_HDL_Toolbox \
     Wireless_Testbench \
     || (echo "MPM Installation Failure. See below for more information:" && cat /tmp/mathworks_root.log && false) \
-    && sudo rm -f mpm /tmp/mathworks_root.log \
+    && sudo rm -rf mpm /tmp/mathworks_root.log ${HOME}/.MathWorks \
     && sudo ln -s /opt/matlab/${MATLAB_RELEASE}/bin/matlab /usr/local/bin/matlab
 
 RUN ls -l /usr/local/bin/matlab
