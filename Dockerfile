@@ -2,7 +2,7 @@
 
 # To specify which MATLAB release to install in the container, edit the value of the MATLAB_RELEASE argument.
 # Use lower case to specify the release, for example: ARG MATLAB_RELEASE=r2021b
-ARG MATLAB_RELEASE=r2023b
+ARG MATLAB_RELEASE=r2024a
 
 # When you start the build stage, this Dockerfile by default uses the Ubuntu-based matlab-deps image.
 # To check the available matlab-deps images, see: https://hub.docker.com/r/mathworks/matlab-deps
@@ -154,6 +154,8 @@ RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm \
     || (echo "MPM Installation Failure. See below for more information:" && cat /tmp/mathworks_root.log && false) \
     && sudo rm -f mpm /tmp/mathworks_root.log \
     && sudo ln -s /opt/matlab/${MATLAB_RELEASE}/bin/matlab /usr/local/bin/matlab
+
+RUN ls -l /usr/local/bin/matlab
 
 ENTRYPOINT ["matlab"]
 CMD [""]
