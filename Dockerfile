@@ -1,8 +1,8 @@
-# Copyright 2023-2024 The MathWorks, Inc.
+# Copyright 2023-2026 The MathWorks, Inc.
 
 # To specify which MATLAB release to install in the container, edit the value of the MATLAB_RELEASE argument.
-# Use lower case to specify the release, for example: ARG MATLAB_RELEASE=r2024a
-ARG MATLAB_RELEASE=r2024a
+# Use lower case to specify the release, for example: ARG MATLAB_RELEASE=r2026a
+ARG MATLAB_RELEASE=r2026a
 
 # This Dockerfile builds on the Ubuntu-based mathworks/matlab image.
 # To check the available matlab images, see: https://hub.docker.com/r/mathworks/matlab
@@ -115,10 +115,19 @@ RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm \
 # https://github.com/mathworks-ref-arch/matlab-dockerfile#help-make-matlab-even-better
 ENV MW_DDUX_FORCE_ENABLE=true MW_CONTEXT_TAGS=$MW_CONTEXT_TAGS,MATLAB:TOOLBOXES:DOCKERFILE:V1
 
-# Patch noVNC for Coder subpath proxy support (works with both subdomain=true and subdomain=false)
-COPY scripts/patch_novnc.py /tmp/patch_novnc.py
-RUN sudo python3 /tmp/patch_novnc.py \
-    && echo '<html><script>window.location.href = "vnc.html?password=matlab&autoconnect=true&resize=remote"</script></html>' | sudo tee /opt/noVNC/index.html > /dev/null \
-    && sudo rm /tmp/patch_novnc.py
+# Upgrade the noVNC web files, keeping the base image's utils/ (launch.sh + websockify).
+# noVNC >= 1.5 resolves the WebSocket URL relative to the page, so it works behind
+# Coder's path-based proxy out of the box. The stock redirect.html (symlinked to
+# index.html at runtime when the default password is used) redirects to an absolute
+# /vnc.html, so replace it with a relative redirect.
+ARG NOVNC_VERSION=1.7.0
+RUN cd /home/matlab/apps/noVNC \
+    && rm -rf app core vendor \
+    && curl -fsSL https://github.com/novnc/noVNC/archive/refs/tags/v${NOVNC_VERSION}.tar.gz \
+       | tar -xz --strip-components=1 \
+          noVNC-${NOVNC_VERSION}/app noVNC-${NOVNC_VERSION}/core noVNC-${NOVNC_VERSION}/vendor \
+          noVNC-${NOVNC_VERSION}/vnc.html noVNC-${NOVNC_VERSION}/vnc_lite.html \
+          noVNC-${NOVNC_VERSION}/defaults.json noVNC-${NOVNC_VERSION}/mandatory.json \
+    && echo '<html><script>window.location.href = "vnc.html?password=matlab&autoconnect=true&resize=remote"</script></html>' | sudo tee redirect.html > /dev/null
 
 WORKDIR /home/matlab
