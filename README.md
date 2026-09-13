@@ -6,8 +6,11 @@ This image has been built on top of the [matlab](https://hub.docker.com/r/mathwo
 
 ## Build
 
+Builds on `mathworks/matlab:r2026a` by default. Override with `MATLAB_RELEASE`:
+
 ```bash
 docker build -t matlab .
+docker build --build-arg MATLAB_RELEASE=r2025b -t matlab:r2025b .
 ```
 
 ## Run MATLAB in desktop mode and interact with it via VNC
@@ -37,32 +40,35 @@ Running the above command prints text to your terminal containing the URL to acc
 MATLAB can be accessed at:
 [http://localhost:8888/index.html](http://localhost:8888/index.html)
 
-## List of installed toolboxes:
+## List of toolboxes
+
+All R2026a products. Uncommented ones are installed in this image; edit the `--products` list in the Dockerfile to change it.
+
 ```bash
     5G_Toolbox \
     #AUTOSAR_Blockset \
     #Aerospace_Blockset \
-    Aerospace_Toolbox \
+    #Aerospace_Toolbox \
     Antenna_Toolbox \
-    Audio_Toolbox \
-    Automated_Driving_Toolbox \
-    Bioinformatics_Toolbox \
+    #Audio_Toolbox \
+    #Automated_Driving_Toolbox \
+    #Bioinformatics_Toolbox \
     Bluetooth_Toolbox \
+    #C2000_Microcontroller_Blockset \
     Communications_Toolbox \
     Computer_Vision_Toolbox \
     Control_System_Toolbox \
     Curve_Fitting_Toolbox \
     #DDS_Blockset \
-    #DO_Qualification_Kit \
-    DSP_HDL_Toolbox \
+    #DSP_HDL_Toolbox \
     DSP_System_Toolbox \
+    #Data_Acquisition_Toolbox \
     #Database_Toolbox \
     #Datafeed_Toolbox \
     #Deep_Learning_HDL_Toolbox \
     Deep_Learning_Toolbox \
     #Econometrics_Toolbox \
     #Embedded_Coder \
-    #Filter_Design_HDL_Coder \
     #Financial_Instruments_Toolbox \
     #Financial_Toolbox \
     Fixed-Point_Designer \
@@ -71,7 +77,6 @@ MATLAB can be accessed at:
     Global_Optimization_Toolbox \
     #HDL_Coder \
     #HDL_Verifier \
-    #IEC_Certification_Kit \
     #Image_Acquisition_Toolbox \
     Image_Processing_Toolbox \
     #Industrial_Communication_Toolbox \
@@ -84,12 +89,15 @@ MATLAB can be accessed at:
     MATLAB_Compiler_SDK \
     MATLAB_Parallel_Server \
     #MATLAB_Production_Server \
-    MATLAB_Report_Generator \
+    #MATLAB_Report_Generator \
+    #MATLAB_Test \
     #MATLAB_Web_App_Server \
-    Mapping_Toolbox \
-    # Mixed-Signal_Blockset \
+    #Mapping_Toolbox \
+    #Medical_Imaging_Toolbox \
+    #Mixed-Signal_Blockset \
     Model_Predictive_Control_Toolbox \
-    # Motor_Control_Blockset \
+    #Model-Based_Calibration_Toolbox \
+    #Motor_Control_Blockset \
     Navigation_Toolbox \
     Optimization_Toolbox \
     Parallel_Computing_Toolbox \
@@ -99,18 +107,22 @@ MATLAB can be accessed at:
     #Polyspace_Bug_Finder_Server \
     #Polyspace_Code_Prover \
     #Polyspace_Code_Prover_Server \
+    #Polyspace_Test \
+    #Polyspace_as_You_Code \
     #Powertrain_Blockset \
     #Predictive_Maintenance_Toolbox \
-    # RF_Blockset \
-    RF_PCB_Toolbox \
+    #RF_Blockset \
+    #RF_PCB_Toolbox \
     RF_Toolbox \
     ROS_Toolbox \
     Radar_Toolbox \
+    #Raspberry_Pi_Blockset \
     Reinforcement_Learning_Toolbox \
     #Requirements_Toolbox \
     #Risk_Management_Toolbox \
     Robotics_System_Toolbox \
     Robust_Control_Toolbox \
+    #STM32_Microcontroller_Blockset \
     Satellite_Communications_Toolbox \
     Sensor_Fusion_and_Tracking_Toolbox \
     #SerDes_Toolbox \
@@ -119,14 +131,14 @@ MATLAB can be accessed at:
     #SimBiology \
     #SimEvents \
     #Simscape \
+    #Simscape_Battery \
     #Simscape_Driveline \
     #Simscape_Electrical \
     #Simscape_Fluids \
     #Simscape_Multibody \
-    #Simulink \
+    Simulink \
     #Simulink_3D_Animation \
     #Simulink_Check \
-    #Simulink_Code_Inspector \
     #Simulink_Coder \
     #Simulink_Compiler \
     #Simulink_Control_Design \
@@ -134,6 +146,8 @@ MATLAB can be accessed at:
     #Simulink_Design_Optimization \
     #Simulink_Design_Verifier \
     #Simulink_Desktop_Real-Time \
+    #Simulink_FMU_Builder \
+    #Simulink_Fault_Analyzer \
     #Simulink_PLC_Coder \
     #Simulink_Real-Time \
     #Simulink_Report_Generator \
@@ -147,11 +161,12 @@ MATLAB can be accessed at:
     System_Identification_Toolbox \
     Text_Analytics_Toolbox \
     UAV_Toolbox \
-    # Vehicle_Dynamics_Blockset \
+    #Vehicle_Dynamics_Blockset \
     Vehicle_Network_Toolbox \
     #Vision_HDL_Toolbox \
     WLAN_Toolbox \
     Wavelet_Toolbox \
     #Wireless_HDL_Toolbox \
+    #Wireless_Network_Toolbox \
     Wireless_Testbench
 ```
