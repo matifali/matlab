@@ -18,7 +18,7 @@ docker build --build-arg MATLAB_RELEASE=r2025b -t matlab:r2025b .
 To start the MATLAB desktop, execute:
 
 ```bash
-docker run -it --rm -p 5901:5901 -p 6080:6080 --shm-size=512M matifali/matlab:latest -vnc
+docker run -it --rm -p 5901:5901 -p 6080:6080 --shm-size=512M ghcr.io/matifali/matlab:latest -vnc
 ```
 
 To connect to the MATLAB desktop, either:
@@ -32,7 +32,7 @@ The VNC password is matlab by default. Use the `PASSWORD` environment variable t
 To start the container, execute:
 
 ```bash
-docker run -it --rm -p 8888:8888 --shm-size=512M matifali/matlab:latest -browser
+docker run -it --rm -p 8888:8888 --shm-size=512M ghcr.io/matifali/matlab:latest -browser
 ```
 
 Running the above command prints text to your terminal containing the URL to access MATLAB. For example:
