@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ci-tests-${{ github.ref }}-1
+  group: docker-${{ github.ref }}
   cancel-in-progress: true
 
 env:
