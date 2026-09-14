@@ -33,6 +33,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 # so that mpm can set the correct root folder for the support packages.
 WORKDIR /tmp
 USER matlab
+COPY products.txt .
 # Run mpm to install MathWorks products into the existing MATLAB installation directory,
 # and delete the mpm installation afterwards.
 # If mpm fails to install successfully then output the logfile to the terminal, otherwise cleanup.
@@ -44,53 +45,9 @@ RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm \
         --release=${MATLAB_RELEASE} \
         --doc \
         --products \
-        5G_Toolbox \
-        Antenna_Toolbox \
-        Bluetooth_Toolbox \
-        Communications_Toolbox \
-        Computer_Vision_Toolbox \
-        Control_System_Toolbox \
-        Curve_Fitting_Toolbox \
-        DSP_System_Toolbox \
-        Deep_Learning_Toolbox \
-        Fixed-Point_Designer \
-        Fuzzy_Logic_Toolbox \
-        Global_Optimization_Toolbox \
-        Image_Processing_Toolbox \
-        LTE_Toolbox \
-        Lidar_Toolbox \
-        MATLAB_Coder \
-        MATLAB_Compiler \
-        MATLAB_Compiler_SDK \
-        MATLAB_Parallel_Server \
-        Model_Predictive_Control_Toolbox \
-        Navigation_Toolbox \
-        Optimization_Toolbox \
-        Parallel_Computing_Toolbox \
-        Partial_Differential_Equation_Toolbox \
-        Phased_Array_System_Toolbox \
-        RF_Toolbox \
-        ROS_Toolbox \
-        Radar_Toolbox \
-        Reinforcement_Learning_Toolbox \
-        Robotics_System_Toolbox \
-        Robust_Control_Toolbox \
-        Satellite_Communications_Toolbox \
-        Sensor_Fusion_and_Tracking_Toolbox \
-        Signal_Integrity_Toolbox \
-        Signal_Processing_Toolbox \
-        Simulink \
-        Statistics_and_Machine_Learning_Toolbox \
-        Symbolic_Math_Toolbox \
-        System_Identification_Toolbox \
-        Text_Analytics_Toolbox \
-        UAV_Toolbox \
-        Vehicle_Network_Toolbox \
-        WLAN_Toolbox \
-        Wavelet_Toolbox \
-        Wireless_Testbench \
+        $(grep -v '^#' /tmp/products.txt) \
     || (echo "MPM Installation Failure. See below for more information:" && cat /tmp/mathworks_root.log && false) \
-    && sudo rm -rf mpm /tmp/mathworks_root.log ${HOME}/.MathWorks
+    && sudo rm -rf mpm products.txt /tmp/mathworks_root.log ${HOME}/.MathWorks
 
 # When running the container a license file can be mounted,
 # or a license server can be provided as an environment variable.
