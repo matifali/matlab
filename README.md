@@ -4,6 +4,12 @@ A custom matlab docker image for my own use.
 
 This image has been built on top of the [matlab](https://hub.docker.com/r/mathworks/matlab/) image from MathWorks.
 
+Published to `ghcr.io/matifali/matlab` with tags `latest` and `r2026a`.
+
+```bash
+docker pull ghcr.io/matifali/matlab:latest
+```
+
 ## Build
 
 Builds on `mathworks/matlab:r2026a` by default. Override with `MATLAB_RELEASE`:
